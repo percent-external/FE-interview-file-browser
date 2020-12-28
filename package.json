@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "scripts": {
+    "generate": "graphql-codegen"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.13.5",
+    "@graphql-codegen/fragment-matcher": "^1.17.0",
+    "@graphql-codegen/typescript": "^1.13.5",
+    "@graphql-codegen/typescript-operations": "^1.13.5",
+    "@graphql-codegen/typescript-react-apollo": "^1.15.3",
+    "@graphql-codegen/typescript-resolvers": "^1.13.5",
+    "graphql": "^15.0.0",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.6"
+  }
+}

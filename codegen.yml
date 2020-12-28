@@ -1,0 +1,24 @@
+schema: server/src/schema/index.ts
+generates:
+  server/src/generated/schema.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+  client/src/generated-api/index.tsx:
+    documents:
+      - server/src/schema/queries/**/*.ts
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      reactApolloVersion: 3
+      skipTypename: false
+      withHooks: true
+      withHOC: false
+      withComponent: false
+  client/src/generated-api/introspection.ts:
+    plugins:
+      - fragment-matcher
+require:
+  - ts-node/register
