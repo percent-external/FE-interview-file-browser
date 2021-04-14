@@ -39,6 +39,7 @@ export type ListEntriesResult = {
 
 export type File = {
   __typename?: 'File';
+  id: Scalars['String'];
   path: Scalars['String'];
   name: Scalars['String'];
   size: Scalars['Int'];
@@ -47,6 +48,7 @@ export type File = {
 
 export type Directory = {
   __typename?: 'Directory';
+  id: Scalars['String'];
   path: Scalars['String'];
   name: Scalars['String'];
 };
@@ -174,6 +176,7 @@ export type ListEntriesResultResolvers<ContextType = any, ParentType extends Res
 };
 
 export type FileResolvers<ContextType = any, ParentType extends ResolversParentTypes['File'] = ResolversParentTypes['File']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   path?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   size?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -182,6 +185,7 @@ export type FileResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type DirectoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Directory'] = ResolversParentTypes['Directory']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   path?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;

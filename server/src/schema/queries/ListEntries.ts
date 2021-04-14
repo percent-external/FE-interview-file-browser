@@ -12,12 +12,14 @@ export const ListEntries = gql`
       entries {
         __typename
         ... on File {
+          id
           path
           name
           size
           lastModified
         }
         ... on Directory {
+          id
           path
           name
         }

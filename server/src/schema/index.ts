@@ -18,6 +18,7 @@ export const typeDefs = gql`
   }
 
   type File {
+    id: String!
     path: String!
     name: String!
     size: Int!
@@ -25,6 +26,7 @@ export const typeDefs = gql`
   }
 
   type Directory {
+    id: String!
     path: String!
     name: String!
   }

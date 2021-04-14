@@ -39,6 +39,7 @@ export type ListEntriesResult = {
 
 export type File = {
   __typename?: 'File';
+  id: Scalars['String'];
   path: Scalars['String'];
   name: Scalars['String'];
   size: Scalars['Int'];
@@ -47,6 +48,7 @@ export type File = {
 
 export type Directory = {
   __typename?: 'Directory';
+  id: Scalars['String'];
   path: Scalars['String'];
   name: Scalars['String'];
 };
@@ -68,10 +70,10 @@ export type ListEntriesQuery = (
       & Pick<Pagination, 'page' | 'pageCount' | 'prevPage' | 'nextPage'>
     ), entries: Array<Maybe<(
       { __typename: 'File' }
-      & Pick<File, 'path' | 'name' | 'size' | 'lastModified'>
+      & Pick<File, 'id' | 'path' | 'name' | 'size' | 'lastModified'>
     ) | (
       { __typename: 'Directory' }
-      & Pick<Directory, 'path' | 'name'>
+      & Pick<Directory, 'id' | 'path' | 'name'>
     )>> }
   )> }
 );
@@ -89,12 +91,14 @@ export const ListEntriesDocument = gql`
     entries {
       __typename
       ... on File {
+        id
         path
         name
         size
         lastModified
       }
       ... on Directory {
+        id
         path
         name
       }

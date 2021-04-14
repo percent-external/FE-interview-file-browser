@@ -5,18 +5,22 @@ import { Entry, Resolvers, File, Directory, Pagination } from './generated/schem
 import { Entry as FileSystemEntry, File as FileSystemFile, Directory as FileSystemDirectory, lookupPath } from './db';
 
 const mapFileOutput = (file: FileSystemFile, pathSegments: string[]): File => {
+  const path = [...pathSegments, file.name].join('/')
   return {
     name: file.name,
     size: file.size,
     lastModified: file.lastModified,
-    path: [...pathSegments, file.name].join('/')
+    path,
+    id: path,
   };
 };
 
 const mapDirectoryOutput = (directory: FileSystemDirectory, pathSegments: string[]): Directory => {
+  const path = [...pathSegments, directory.name].join('/')
   return {
     name: directory.name,
-    path: [...pathSegments, directory.name].join('/')
+    path,
+    id: path,
   };
 };
 
