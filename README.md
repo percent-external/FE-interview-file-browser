@@ -2,22 +2,16 @@
 
 File Browser is intended to provide a user a simple UI to explore a file system.
 The server exposes a GraphQL API that allows the front end application to read the file system entries and their metadata so that it can be displayed to the user.
-Your challenge is to build a React UI to allow the user to navigate the file system through directory links and display the file metadata for each.
+Your challenge is to build a React UI to allow the user to filter available data by creating a system of table filters. As an example an initial filter has been created for you to demonstrate how to apply a filter to the existing GraphQL query. The filter design is left intentionally underspecified to give you room for creativity. 
 
-The design is left intentionally underspecified to give you room for creativity but as an example, a simple table layout with rows corresponding to the directories and files within the current directory would be a great starting point.
+### Requirements
 
-* Directories should be clickable in some way to change the current directory and show the user the contents of that directory.
-* File entries should be display along with their size and last modified times but otherwise don't need to be interactive.
+Your UI should support filtering by:
+  * **File size (min / max)**
+  * **Entry Name**
+  * **Entry Type**
 
-We're not expecting a breathtaking design so use your time wisely with regard to look-and-feel but please do make sure the interface is tidy and understandable.
-Even simple borders, spacing, and alignment will go a long way!
-
-In addition to the basic file browser layout and functionality there are two additional requirements:
-
-1. Display a component to summarize the entire current directory tree, showing the total number of files within the current directory (all descendants, including files and directories below the current one but not currently displayed) and the sum of the file sizes. 
-    * Only show this component if current directory is not the root directory `'/'`.
-    * Show the same data for the entire directory tree (i.e. starting from `'/'`) and this should always be visible, regardless of the current directory.
-2. Some directories may have many files and the server will only return 25 at a time. Provide some UI for the user to understand that there are more files to see and some way for them to view the next page(s) of results.
+Also, please clean up the existing demo code where you see fit. Keep in mind that your final result should be a representation of *your* coding style. Everything that already exists in this demo is simply there as a jumping off point. No amount of refactoring is off limits as long as all **existing functionality** is retained and expanded upon.
 
 ## Getting Started
 
@@ -31,7 +25,7 @@ In addition to the basic file browser layout and functionality there are two add
 
 The project is designed to be run locally on your machine. The client project is a mostly empty React app created by `create-react-app` with the Typescript template so the local dev server can be started like normal via `yarn start` in the `client` directory and will run at `http://localhost:3000` by default.
 
-The server is a simple Apollo GraphQL server and can be started via `yarn start-server` in the `server` directory and will run at `http://localhost:4000` by default.
+The server is a simple Apollo GraphQL server and can be started via `yarn start` in the `server` directory and will run at `http://localhost:4000` by default.
 If you need to change this for some reason keep in mind that the client is pre-configured to connect to the GraphQL server at that address so you'll need to change it in `client/src/index.tsx` as well.
 
 Finally, Typescript GraphQL type generation is provided for the schema and defined queries.
@@ -57,6 +51,6 @@ Additionally, any query documents you define will be generated into the client t
 These are not required but if you found this exercise to be easy or doesn't show off your knowledge enough, feel free to spice it up. Some ideas:
 
 * Can you make the directory listing sortable by the user? Allow the user to sort files by type? How does this affect pagination?
-* What about making the current directory bookmarkable/allow the browser forward & back buttons to work?
 * The data model could be extended in interesting ways.
+* Can you give the filters a better design?
 * Maybe something should happen when you click a file?
