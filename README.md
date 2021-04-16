@@ -52,5 +52,5 @@ These are not required but if you found this exercise to be easy or doesn't show
 
 * Can you make the directory listing sortable by the user? Allow the user to sort files by type? How does this affect pagination?
 * The data model could be extended in interesting ways.
-* Can you give the filters a better design?
+* Can you improve the filter design?
 * Maybe something should happen when you click a file?
