@@ -51,7 +51,8 @@ const buildPagination = (entries: any[], page: number): Pagination => {
     page,
     pageCount: Math.ceil(entries.length / PAGE_SIZE),
     prevPage: page === 1 ? null : page - 1,
-    nextPage: page * PAGE_SIZE >= entries.length ? null : page + 1
+    nextPage: page * PAGE_SIZE >= entries.length ? null : page + 1,
+    totalRows: entries.length,
   };
 };
 

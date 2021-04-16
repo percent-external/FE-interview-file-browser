@@ -10,6 +10,7 @@ export const typeDefs = gql`
     pageCount: Int!
     prevPage: Int
     nextPage: Int
+    totalRows: Int
   }
 
   type ListEntriesResult {

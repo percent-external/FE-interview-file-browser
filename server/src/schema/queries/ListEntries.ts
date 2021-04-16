@@ -8,6 +8,7 @@ export const ListEntries = gql`
         pageCount
         prevPage
         nextPage
+        totalRows
       }
       entries {
         __typename

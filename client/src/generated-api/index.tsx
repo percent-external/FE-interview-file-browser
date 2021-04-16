@@ -29,6 +29,7 @@ export type Pagination = {
   pageCount: Scalars['Int'];
   prevPage?: Maybe<Scalars['Int']>;
   nextPage?: Maybe<Scalars['Int']>;
+  totalRows?: Maybe<Scalars['Int']>;
 };
 
 export type ListEntriesResult = {
@@ -67,7 +68,7 @@ export type ListEntriesQuery = (
     { __typename?: 'ListEntriesResult' }
     & { pagination: (
       { __typename?: 'Pagination' }
-      & Pick<Pagination, 'page' | 'pageCount' | 'prevPage' | 'nextPage'>
+      & Pick<Pagination, 'page' | 'pageCount' | 'prevPage' | 'nextPage' | 'totalRows'>
     ), entries: Array<Maybe<(
       { __typename: 'File' }
       & Pick<File, 'id' | 'path' | 'name' | 'size' | 'lastModified'>
@@ -87,6 +88,7 @@ export const ListEntriesDocument = gql`
       pageCount
       prevPage
       nextPage
+      totalRows
     }
     entries {
       __typename

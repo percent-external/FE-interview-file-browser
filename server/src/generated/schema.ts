@@ -29,6 +29,7 @@ export type Pagination = {
   pageCount: Scalars['Int'];
   prevPage?: Maybe<Scalars['Int']>;
   nextPage?: Maybe<Scalars['Int']>;
+  totalRows?: Maybe<Scalars['Int']>;
 };
 
 export type ListEntriesResult = {
@@ -166,6 +167,7 @@ export type PaginationResolvers<ContextType = any, ParentType extends ResolversP
   pageCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   prevPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  totalRows?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
