@@ -1,7 +1,9 @@
 import { ApolloServer, makeExecutableSchema } from 'apollo-server';
+import compact from 'lodash/compact'
+import map from 'lodash/map'
 
 import { typeDefs } from './schema';
-import { Entry, Resolvers, File, Directory, Pagination } from './generated/schema';
+import { Entry, Resolvers, File, Directory, Pagination, WhereInput, Maybe } from './generated/schema';
 import { Entry as FileSystemEntry, File as FileSystemFile, Directory as FileSystemDirectory, lookupPath } from './db';
 
 const mapFileOutput = (file: FileSystemFile, pathSegments: string[]): File => {
@@ -32,8 +34,48 @@ const mapOutput = (entry: FileSystemEntry, pathSegments: string[]): Entry => {
   }
 };
 
+const filterEntries = (entries: any[], where?: Maybe<WhereInput>): any[] => {
+  if (where) {
+    return compact(
+      map(entries, (entry) => {
+        let tmpEntry: FileSystemEntry | undefined = lookupPath(entry.path.split('/'))
+        const lt = where.size_lt ?? 0
+        const gt = where.size_gt ?? 0
+
+        // Type
+        if (where.type_eq) {
+          if (entry.__typename !== where.type_eq) tmpEntry = undefined
+        }
+
+        // Size
+        if (tmpEntry?.isFile) {
+          if (where.size_lt && where.size_gt) {
+            if (tmpEntry.size < gt && tmpEntry.size > lt) tmpEntry = undefined
+          } else if (where.size_lt && !where.size_gt) {
+            if (tmpEntry.size > lt) tmpEntry = undefined
+          } else if (where.size_gt && !where.size_lt) {
+            if (tmpEntry.size < gt) tmpEntry = undefined
+          }
+        }
+
+        // Name
+        if (where.name_contains) {
+          if (!tmpEntry?.name.toLowerCase().includes(where.name_contains)) tmpEntry = undefined
+        }
+
+        return tmpEntry ? entry : undefined
+      })
+    )
+  }
+
+  return entries
+}
+
 const PAGE_SIZE = 25;
-const slicePage = <T>(entries: T[], page: number) => {
+const slicePage = <T>(
+  entries: T[], 
+  page: number,
+) => {
   const pageCount = Math.ceil(entries.length / PAGE_SIZE);
   if (page < 1) {
     page = 1;
@@ -46,7 +88,11 @@ const slicePage = <T>(entries: T[], page: number) => {
   return [...entries].slice(start, end);
 };
 
-const buildPagination = (entries: any[], page: number): Pagination => {
+const buildPagination = (
+  entries: any[], 
+  page: number,
+): Pagination => {
+  
   return {
     page,
     pageCount: Math.ceil(entries.length / PAGE_SIZE),
@@ -58,7 +104,7 @@ const buildPagination = (entries: any[], page: number): Pagination => {
 
 const resolvers: Resolvers = {
   Query: {
-    listEntries(_root, { path, page }) {
+    listEntries(_root, { path, page, where }) {
       page = page || 1;
 
       if (!path.startsWith('/')) {
@@ -72,9 +118,11 @@ const resolvers: Resolvers = {
         ? [mapOutput(result, pathSegments)]
         : result.entries.map(e => mapOutput(e, pathSegments));
 
+      const filteredEntries = filterEntries(entries as any, where)
+
       return {
-        entries: slicePage(entries, page),
-        pagination: buildPagination(entries, page)
+        entries: slicePage(filteredEntries, page),
+        pagination: buildPagination(filteredEntries, page)
       };
     }
   },

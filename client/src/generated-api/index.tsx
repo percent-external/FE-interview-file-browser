@@ -21,6 +21,14 @@ export type Query = {
 export type QueryListEntriesArgs = {
   path: Scalars['String'];
   page?: Maybe<Scalars['Int']>;
+  where?: Maybe<WhereInput>;
+};
+
+export type WhereInput = {
+  size_gt?: Maybe<Scalars['Int']>;
+  size_lt?: Maybe<Scalars['Int']>;
+  name_contains?: Maybe<Scalars['String']>;
+  type_eq?: Maybe<Scalars['String']>;
 };
 
 export type Pagination = {
@@ -59,6 +67,7 @@ export type Entry = File | Directory;
 export type ListEntriesQueryVariables = Exact<{
   path: Scalars['String'];
   page?: Maybe<Scalars['Int']>;
+  where?: Maybe<WhereInput>;
 }>;
 
 
@@ -81,8 +90,8 @@ export type ListEntriesQuery = (
 
 
 export const ListEntriesDocument = gql`
-    query ListEntries($path: String!, $page: Int) {
-  listEntries(path: $path, page: $page) {
+    query ListEntries($path: String!, $page: Int, $where: WhereInput) {
+  listEntries(path: $path, page: $page, where: $where) {
     pagination {
       page
       pageCount
@@ -123,6 +132,7 @@ export const ListEntriesDocument = gql`
  *   variables: {
  *      path: // value for 'path'
  *      page: // value for 'page'
+ *      where: // value for 'where'
  *   },
  * });
  */

@@ -2,6 +2,7 @@ import React from "react";
 
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import Chip from "@material-ui/core/Chip";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -10,7 +11,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import LinearProgress from "@material-ui/core/LinearProgress";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 import { makeStyles } from '@material-ui/core/styles';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
@@ -23,8 +25,9 @@ const useStyles = makeStyles({
   },
 });
 
-function Grid() {
+function DataGrid() {
   const classes = useStyles();
+  const [sizeGt, setSizeGt] = React.useState(200);
   const [page, setPage] = React.useState(1);
   const [currentPath, setCurrentPath] = React.useState('/')
   const [history, updateHistory] = React.useState<{ id: string, path: string }[]>(
@@ -34,7 +37,31 @@ function Grid() {
     }]
   )
   const { data, loading, error } = useListEntriesQuery({
-    variables: { path: currentPath, page },
+    variables: { 
+      path: currentPath, 
+      page, 
+      where: {
+        /**
+         * File Size
+         * @name size_gt a number value that file size should be greater than
+         * @name size_lt a number value that file size should be less than
+         */
+        size_gt: sizeGt, // Int
+        // size_lt: Int,
+
+        /**
+         * Entry Name Contains
+         * @name name_contains an entry "name" text value to search on
+         */
+        // name_contains: String,
+        
+        /**
+         * Type Equals
+         * @name type_eq Exact match for Entry type
+         */
+        // type_eq: "Directory" | "File",
+      }
+    },
   });
 
   React.useEffect(() => {
@@ -74,10 +101,42 @@ function Grid() {
     setPage(newPage + 1);
   };
 
+  const handleDelete = () => {
+    setSizeGt(0)
+  }
+
   return (
     <Box display="flex" height="100%">
       <Box flexGrow={1}>
         <Paper>
+          <Toolbar>
+            <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+              <Typography variant="h6">File Browser</Typography>
+              <Box>
+                <Chip 
+                  color="primary" 
+                  onDelete={handleDelete} 
+                  label={
+                    <Box>
+                      <strong>File Size &gt;</strong>
+                      <input 
+                        onChange={(e) => setSizeGt(Number(e.currentTarget.value))} 
+                        type="number"
+                        value={sizeGt}
+                        style={{
+                          marginLeft: 8,
+                          background: 'transparent',
+                          color: 'white',
+                          border: 'none',
+                          width: 80,
+                        }}
+                      />
+                    </Box>
+                  }
+                />
+              </Box>
+            </Box>
+          </Toolbar>
           <TableContainer>
             <Table className={classes.table} size="small" aria-label="a dense table">
               <TableHead>
@@ -131,12 +190,11 @@ function Grid() {
             rowsPerPage={25}
             page={page - 1}
             onChangePage={handleChangePage}
-        />
+          />
         </Paper>
       </Box>
     </Box>
   );
 }
 
-Grid.whyDidYouRender = true
-export default Grid;
+export default DataGrid;

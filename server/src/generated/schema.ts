@@ -21,6 +21,14 @@ export type Query = {
 export type QueryListEntriesArgs = {
   path: Scalars['String'];
   page?: Maybe<Scalars['Int']>;
+  where?: Maybe<WhereInput>;
+};
+
+export type WhereInput = {
+  size_gt?: Maybe<Scalars['Int']>;
+  size_lt?: Maybe<Scalars['Int']>;
+  name_contains?: Maybe<Scalars['String']>;
+  type_eq?: Maybe<Scalars['String']>;
 };
 
 export type Pagination = {
@@ -137,6 +145,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  WhereInput: WhereInput;
   Pagination: ResolverTypeWrapper<Pagination>;
   ListEntriesResult: ResolverTypeWrapper<Omit<ListEntriesResult, 'entries'> & { entries: Array<Maybe<ResolversTypes['Entry']>> }>;
   File: ResolverTypeWrapper<File>;
@@ -150,6 +159,7 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String'];
   Int: Scalars['Int'];
+  WhereInput: WhereInput;
   Pagination: Pagination;
   ListEntriesResult: Omit<ListEntriesResult, 'entries'> & { entries: Array<Maybe<ResolversParentTypes['Entry']>> };
   File: File;

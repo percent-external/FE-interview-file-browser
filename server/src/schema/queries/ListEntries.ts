@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const ListEntries = gql`
-  query ListEntries($path: String!, $page: Int) {
-    listEntries(path: $path, page: $page) {
+  query ListEntries($path: String!, $page: Int, $where: WhereInput) {
+    listEntries(path: $path, page: $page, where: $where) {
       pagination {
         page
         pageCount
