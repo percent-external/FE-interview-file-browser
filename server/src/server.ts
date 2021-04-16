@@ -44,7 +44,8 @@ const filterEntries = (entries: any[], where?: Maybe<WhereInput>): any[] => {
 
         // Type
         if (where.type_eq) {
-          if (entry.__typename !== where.type_eq) tmpEntry = undefined
+          if (where.type_eq === "Directory" && tmpEntry?.isFile) tmpEntry = undefined
+          if (where.type_eq === "File" && tmpEntry?.isDirectory) tmpEntry = undefined
         }
 
         // Size

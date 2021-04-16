@@ -50,7 +50,11 @@ Additionally, any query documents you define will be generated into the client t
 
 These are not required but if you found this exercise to be easy or doesn't show off your knowledge enough, feel free to spice it up. Some ideas:
 
+* Can you improve the design of the filters or the table cells?
+* Can you improve performance?
+* Can you add loading, empty, and error states to the table?
+* Can you add additional filters?
+* Can you allow the filters to work through all directories?
 * Can you make the directory listing sortable by the user? Allow the user to sort files by type? How does this affect pagination?
 * The data model could be extended in interesting ways.
-* Can you improve the filter design?
 * Maybe something should happen when you click a file?
