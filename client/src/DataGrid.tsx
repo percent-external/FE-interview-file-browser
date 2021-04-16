@@ -46,7 +46,7 @@ function DataGrid() {
          * @name size_gt a number value that file size should be greater than
          * @name size_lt a number value that file size should be less than
          */
-        size_gt: sizeGt, // Int
+        // size_gt: sizeGt, // Int
         // size_lt: Int,
 
         /**
@@ -150,7 +150,6 @@ function DataGrid() {
               <TableBody>
                 {rows.map(({path, __typename, name, size, id }) => {
                   const isUpDir = __typename === 'UP_DIR'
-
                   return (
                     <TableRow key={id}>
                       <TableCell component="th" scope="row">

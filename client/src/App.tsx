@@ -2,7 +2,7 @@ import React from "react";
 
 import Box from "@material-ui/core/Box";
 
-import Grid from './Grid'
+import DataGrid from './DataGrid'
 import "./App.css";
 
 function App() {
@@ -11,11 +11,11 @@ function App() {
         component="main" 
         className="App-main"
         p={2}
+        mt={6}
         mx="auto"
         maxWidth={1200}
-        height={500}
       > 
-        <Grid />
+        <DataGrid />
       </Box>
   );
 }
