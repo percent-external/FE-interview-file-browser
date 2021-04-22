@@ -13,20 +13,35 @@ import TablePagination from '@material-ui/core/TablePagination'
 import TableRow from '@material-ui/core/TableRow'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz'
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight'
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import { useListEntriesQuery } from './generated-api'
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  }
-})
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },
+    table: {
+      minWidth: 650
+    }
+  }),
+);
 
 function DataGrid () {
   const classes = useStyles()
+  const [fileType, setFileType] = React.useState('');
   const [sizeGt, setSizeGt] = React.useState(200)
   const [sizeLt, setSizeLt] = React.useState(200)
   const [fileName, setFileName] = React.useState("")
@@ -54,19 +69,22 @@ function DataGrid () {
          */
         // size_gt: sizeGt, // Int
         // size_lt: Int,
-        size_gt: sizeGt,
-        size_lt: sizeLt,
+        
         /**
          * Entry Name Contains
          * @name name_contains an entry "name" text value to search on
          */
         // name_contains: String,
-        name_contains:fileName
+        
         /**
          * Type Equals
          * @name type_eq Exact match for Entry type
          */
         // type_eq: "Directory" | "File",
+        size_gt: sizeGt,
+        size_lt: sizeLt,
+        name_contains:fileName,
+        type_eq:fileType
       }
     }
   })
@@ -108,6 +126,10 @@ function DataGrid () {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage + 1)
   }
+
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setFileType(event.target.value as string);
+  };
   const resetFileName = () => {
     setFileName("")
   }
@@ -135,6 +157,43 @@ function DataGrid () {
               width='100%'
             >
               <Typography variant='h4'>File Browser</Typography>
+              <FormControl className={classes.formControl}>
+        <InputLabel id="demo-simple-select-label">File Type</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={fileType}
+          onChange={handleChange}
+        >
+          <MenuItem value={""}>Any</MenuItem>
+          <MenuItem value={"Directory"}>Directory</MenuItem>
+          <MenuItem value={"File"}>File</MenuItem>
+        </Select>
+      </FormControl>
+              <Box>
+                <Chip
+                  color='primary'
+                  onDelete={resetFileName}
+                  label={
+                    <Box>
+                      <strong>Filter File Name;</strong>
+                      <input
+                        onChange={e => setFileName(String(e.currentTarget.value))}
+                        type='string'
+                        value={fileName}
+                        style={{
+                          marginLeft: 8,
+                          background: 'transparent',
+                          color: 'white',
+                          border: 'none',
+                          width: 80
+                        }}
+                        placeholder='Filter Value'
+                      />
+                    </Box>
+                  }
+                />
+              </Box>
               <Box>
                 <Chip
                   color='primary'
