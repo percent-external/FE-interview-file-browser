@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react'
 
 import Box from '@material-ui/core/Box'
@@ -20,6 +21,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import { motion, AnimatePresence } from 'framer-motion'
 
 import { useListEntriesQuery } from './generated-api'
 
@@ -61,6 +63,12 @@ function DataGrid () {
       path: currentPath,
       page,
       where: {
+
+        size_gt: sizeGt,
+        size_lt: sizeLt,
+        name_contains:fileName,
+        type_eq:fileType
+
         /**
          * File Size
          * @name size_gt a number value that file size should be greater than
@@ -81,10 +89,7 @@ function DataGrid () {
          * @name type_eq Exact match for Entry type
          */
         // type_eq: "Directory" | "File",
-        size_gt: sizeGt,
-        size_lt: sizeLt,
-        name_contains:fileName,
-        type_eq:fileType
+        
       }
     }
   })
@@ -130,6 +135,7 @@ function DataGrid () {
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setFileType(event.target.value as string);
   };
+
   const resetFileName = () => {
     setFileName("")
   }
@@ -139,12 +145,14 @@ function DataGrid () {
   const resetGt = () => {
     setSizeGt(0)
   }
+
   if (loading) {
     return <h1>loading</h1>
   }
   if (error) {
     return <h1>error</h1>
   }
+
   return (
     <Box display='flex' height='100%'>
       <Box flexGrow={1}>
@@ -271,7 +279,7 @@ function DataGrid () {
           <TableContainer>
             <Table
               className={classes.table}
-              size='small'
+              size='medium'
               aria-label='a dense table'
             >
               <TableHead>
@@ -283,10 +291,15 @@ function DataGrid () {
                 </TableRow>
               </TableHead>
               <TableBody>
+              <AnimatePresence>
                 {rows.map(({ path, __typename, name, size, id }) => {
                   const isUpDir = __typename === 'UP_DIR'
                   return (
-                    <TableRow key={id}>
+                    <TableRow component={motion.div} whileHover={{
+                      scale: 1.03,
+                      transition: { duration: 0.3 }
+                    }}
+                     key={id}>
                       <TableCell component='th' scope='row'>
                         <Button
                           color='primary'
@@ -324,6 +337,7 @@ function DataGrid () {
                     </TableRow>
                   )
                 })}
+                </AnimatePresence>
               </TableBody>
             </Table>
           </TableContainer>
