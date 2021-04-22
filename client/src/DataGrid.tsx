@@ -296,11 +296,14 @@ function DataGrid () {
                   const isUpDir = __typename === 'UP_DIR'
                   return (
                     <TableRow component={motion.div} whileHover={{
-                      scale: 1.03,
+                      scale: 1.021,
                       transition: { duration: 0.3 }
                     }}
+                    
+                    layout
+                    exit={{ opacity: 0, maxHeight: 0 }}
                      key={id}>
-                      <TableCell component='th' scope='row'>
+                      <TableCell component={motion.th} scope='row' >
                         <Button
                           color='primary'
                           disabled={__typename === 'File'}
