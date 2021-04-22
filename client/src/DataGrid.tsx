@@ -16,6 +16,8 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from '@material-ui/core/styles';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 import { useListEntriesQuery } from "./generated-api";
 
@@ -44,11 +46,12 @@ function DataGrid() {
         /**
          * File Size
          * @name size_gt a number value that file size should be greater than
+         *
          * @name size_lt a number value that file size should be less than
          */
         // size_gt: sizeGt, // Int
         // size_lt: Int,
-
+          size_gt: sizeGt
         /**
          * Entry Name Contains
          * @name name_contains an entry "name" text value to search on
@@ -104,14 +107,19 @@ function DataGrid() {
   const handleDelete = () => {
     setSizeGt(0)
   }
-
+  if (loading) {
+    return <h1>loading</h1>
+  }
+  if (error) {
+    return <h1>error</h1>
+  }
   return (
     <Box display="flex" height="100%">
       <Box flexGrow={1}>
         <Paper>
           <Toolbar>
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-              <Typography variant="h6">File Browser</Typography>
+              <Typography variant="h4">File Browser</Typography>
               <Box>
                 <Chip 
                   color="primary" 
@@ -130,7 +138,7 @@ function DataGrid() {
                           border: 'none',
                           width: 80,
                         }}
-                      />
+                      placeholder="Filter Value"/>
                     </Box>
                   }
                 />
