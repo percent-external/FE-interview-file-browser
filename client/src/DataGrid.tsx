@@ -29,6 +29,7 @@ function DataGrid () {
   const classes = useStyles()
   const [sizeGt, setSizeGt] = React.useState(200)
   const [sizeLt, setSizeLt] = React.useState(200)
+  const [fileName, setFileName] = React.useState("")
 
   const [page, setPage] = React.useState(1)
   const [currentPath, setCurrentPath] = React.useState('/')
@@ -54,13 +55,13 @@ function DataGrid () {
         // size_gt: sizeGt, // Int
         // size_lt: Int,
         size_gt: sizeGt,
-        size_lt: sizeLt
+        size_lt: sizeLt,
         /**
          * Entry Name Contains
          * @name name_contains an entry "name" text value to search on
          */
         // name_contains: String,
-
+        name_contains:fileName
         /**
          * Type Equals
          * @name type_eq Exact match for Entry type
@@ -107,6 +108,9 @@ function DataGrid () {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage + 1)
   }
+  const resetFileName = () => {
+    setFileName("")
+  }
   const resetLt = () => {
     setSizeLt(0)
   }
@@ -131,6 +135,30 @@ function DataGrid () {
               width='100%'
             >
               <Typography variant='h4'>File Browser</Typography>
+              <Box>
+                <Chip
+                  color='primary'
+                  onDelete={resetFileName}
+                  label={
+                    <Box>
+                      <strong>Filter File Name;</strong>
+                      <input
+                        onChange={e => setFileName(String(e.currentTarget.value))}
+                        type='string'
+                        value={fileName}
+                        style={{
+                          marginLeft: 8,
+                          background: 'transparent',
+                          color: 'white',
+                          border: 'none',
+                          width: 80
+                        }}
+                        placeholder='Filter Value'
+                      />
+                    </Box>
+                  }
+                />
+              </Box>
               <Box>
                 <Chip
                   color='primary'
