@@ -294,10 +294,12 @@ function DataGrid () {
               <TableBody>
                 <AnimatePresence>
                   {console.log(rows)}
-                  {rows.map(({ path, __typename, name, size, id }) => {
+                  {rows.map(({ path, __typename, name, size, id }, index) => {
                     const isUpDir = __typename === 'UP_DIR'
+                    console.log(index)
                     return (
                       <TableRow
+                      style={ index % 2 ? { background : "#fdffe0" }:{ background : "white" }}
                         component={motion.div}
                         whileHover={{
                           scale: 1.021,
