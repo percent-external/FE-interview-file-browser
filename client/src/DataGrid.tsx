@@ -21,7 +21,6 @@ import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
-import TextField from '@material-ui/core/TextField'
 
 import Skeleton from '@material-ui/lab/Skeleton'
 
@@ -293,10 +292,8 @@ function DataGrid () {
               </TableHead>
               <TableBody>
                 <AnimatePresence>
-                  {console.log(rows)}
                   {rows.map(({ path, __typename, name, size, id }, index) => {
                     const isUpDir = __typename === 'UP_DIR'
-                    console.log(index)
                     return (
                       <TableRow
                       style={ index % 2 ? { background : "#eee" }:{ background : "white" }}
