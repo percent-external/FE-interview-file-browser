@@ -150,7 +150,9 @@ function DataGrid () {
     return <h1>loading</h1>
   }
   if (error) {
-    return <h1>error</h1>
+
+    return <img src="/error-car.jpg" alt=""/>
+
   }
 
   return (
@@ -184,7 +186,7 @@ function DataGrid () {
                   onDelete={resetFileName}
                   label={
                     <Box>
-                      <strong>Filter File Name;</strong>
+                      <strong>Filter File Name</strong>
                       <input
                         onChange={e => setFileName(String(e.currentTarget.value))}
                         type='string'
@@ -292,6 +294,7 @@ function DataGrid () {
               </TableHead>
               <TableBody>
               <AnimatePresence>
+                {console.log(rows)}
                 {rows.map(({ path, __typename, name, size, id }) => {
                   const isUpDir = __typename === 'UP_DIR'
                   return (
