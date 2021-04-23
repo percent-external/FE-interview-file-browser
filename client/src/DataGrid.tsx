@@ -21,6 +21,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Skeleton from '@material-ui/lab/Skeleton';
+
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { useListEntriesQuery } from './generated-api'
@@ -147,7 +149,13 @@ function DataGrid () {
   }
 
   if (loading) {
-    return <h1>loading</h1>
+    return(
+     <div>
+       <h2>loading</h2>
+    <Skeleton />
+    <Skeleton animation={false} />
+    <Skeleton animation="wave" />
+    </div>)
   }
   if (error) {
 
