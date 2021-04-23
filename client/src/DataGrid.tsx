@@ -299,7 +299,7 @@ function DataGrid () {
                     console.log(index)
                     return (
                       <TableRow
-                      style={ index % 2 ? { background : "#fdffe0" }:{ background : "white" }}
+                      style={ index % 2 ? { background : "#eee" }:{ background : "white" }}
                         component={motion.div}
                         whileHover={{
                           scale: 1.021,
