@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React from 'react'
 
 import Box from '@material-ui/core/Box'
@@ -21,8 +20,9 @@ import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
+import Loading from "./Loading"
+import Error from "./Error"
 
-import Skeleton from '@material-ui/lab/Skeleton'
 
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -163,17 +163,10 @@ function DataGrid () {
   }
 
   if (loading) {
-    return (
-      <div>
-        <h2>loading</h2>
-        <Skeleton />
-        <Skeleton animation={false} />
-        <Skeleton animation='wave' />
-      </div>
-    )
+    return <Loading>loading</Loading>
   }
   if (error) {
-    return <img src='/error-car.jpg' alt='' />
+    return <Error imgSrc="error-car.jpg" />
   }
 
   return (
@@ -260,13 +253,6 @@ function DataGrid () {
                           }
                           type='number'
                           value={sizeGt}
-                          style={{
-                            marginLeft: 8,
-                            background: 'transparent',
-                            color: 'white',
-                            border: 'none',
-                            width: 80
-                          }}
                           placeholder='Filter Value'
                         />
                       </Box>
