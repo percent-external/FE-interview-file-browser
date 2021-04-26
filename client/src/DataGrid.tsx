@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme: Theme) =>
 function DataGrid () {
   const classes = useStyles()
   const [fileType, setFileType] = React.useState('')
-  const [sizeGt, setSizeGt] = React.useState(200)
-  const [sizeLt, setSizeLt] = React.useState(200)
+  const [sizeGt, setSizeGt] = React.useState(0)
+  const [sizeLt, setSizeLt] = React.useState(0)
   const [fileName, setFileName] = React.useState('')
 
   const [page, setPage] = React.useState(1)
@@ -155,6 +155,15 @@ function DataGrid () {
   const resetFileName = () => {
     setFileName('')
   }
+  const handleLtChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+    setSizeLt(Number(e.currentTarget.value))  
+    setSizeGt(0)
+  }
+  const handleGtChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+    setSizeGt(Number(e.currentTarget.value))  
+    setSizeLt(0)
+  }
+
   const resetLt = () => {
     setSizeLt(0)
   }
@@ -225,10 +234,9 @@ function DataGrid () {
                     onDelete={resetLt}
                     label={
                       <Box className={classes.box}>
-                        <strong>Max File Size &lt;</strong>
+                        <strong>File Size Smaller than &lt;</strong>
                         <input className={classes.filterInput}
-                          onChange={e =>
-                            setSizeLt(Number(e.currentTarget.value))
+                          onChange={handleLtChange
                           }
                           type='number'
                           value={sizeLt}
@@ -245,11 +253,10 @@ function DataGrid () {
                     onDelete={resetGt}
                     label={
                       <Box className={classes.box}>
-                        <strong>Min File Size &gt;</strong>
+                        <strong>File Size Greater than &gt;</strong>
                         <input
                         className={classes.filterInput}
-                          onChange={e =>
-                            setSizeGt(Number(e.currentTarget.value))
+                          onChange={handleGtChange
                           }
                           type='number'
                           value={sizeGt}
