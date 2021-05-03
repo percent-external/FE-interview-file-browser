@@ -1,16 +1,19 @@
-import React from "react";
-import PropTypes, { InferProps } from "prop-types";
+import React, { memo } from "react";
+import { useSelector } from "react-redux";
 
-import Box from "@material-ui/core/Box";
-import Chip from "@material-ui/core/Chip";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
+import { Box, Toolbar, Typography } from "@material-ui/core";
 
-function CustomToolbar({
-  handleDelete,
-  sizeGt,
+import {
+  selectFilterQuery,
+  setNameContains,
   setSizeGt,
-}: InferProps<typeof CustomToolbar.propTypes>) {
+  setSizeLt,
+} from "@redux-reducers/filter-query";
+
+import { CustomFilterInput } from "@components";
+
+function CustomToolbar() {
+  const filterQuery = useSelector(selectFilterQuery);
   return (
     <Toolbar>
       <Box
@@ -19,28 +22,25 @@ function CustomToolbar({
         justifyContent="space-between"
         width="100%"
       >
-        <Typography variant="h6">File Browser</Typography>
+        <Typography variant="h5">File Browser</Typography>
         <Box>
-          <Chip
-            color="primary"
-            onDelete={handleDelete}
-            label={
-              <Box>
-                <strong>File Size &gt;</strong>
-                <input
-                  onChange={(e) => setSizeGt(Number(e.currentTarget.value))}
-                  type="number"
-                  value={sizeGt}
-                  style={{
-                    marginLeft: 8,
-                    background: "transparent",
-                    color: "white",
-                    border: "none",
-                    width: 80,
-                  }}
-                />
-              </Box>
-            }
+          <CustomFilterInput
+            title="Name Contains: "
+            initialData={filterQuery.nameContains}
+            setReduxData={setNameContains}
+            width={250}
+          />
+          <CustomFilterInput
+            title="Min File Size: "
+            type="number"
+            initialData={filterQuery.sizeGt}
+            setReduxData={setSizeGt}
+          />
+          <CustomFilterInput
+            title="Max File Size: "
+            type="number"
+            initialData={filterQuery.sizeLt}
+            setReduxData={setSizeLt}
           />
         </Box>
       </Box>
@@ -48,10 +48,4 @@ function CustomToolbar({
   );
 }
 
-CustomToolbar.propTypes = {
-  handleDelete: PropTypes.func.isRequired,
-  sizeGt: PropTypes.number.isRequired,
-  setSizeGt: PropTypes.func.isRequired,
-};
-
-export default CustomToolbar;
+export default memo(CustomToolbar);

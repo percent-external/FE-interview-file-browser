@@ -11,6 +11,7 @@ module.exports = function override(config) {
         __dirname,
         "src/components/vectors/illustrations"
       ),
+      "@adapters": path.resolve(__dirname, "src/adapters"),
       "@redux-store": path.resolve(__dirname, "src/redux/store"),
       "@redux-reducers": path.resolve(__dirname, "src/redux/reducers"),
     },

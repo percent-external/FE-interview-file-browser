@@ -3,9 +3,11 @@
     "baseUrl": ".",
     "paths": {
       "@helpers/*": ["./src/helpers/*"],
+      "@components": ["./src/components/fragments"],
       "@components/*": ["./src/components/fragments/*"],
       "@constants": ["./src/constants"],
       "@illustrations": ["./src/components/vectors/illustrations"],
+      "@adapters/*": ["./src/adapters/*"],
       "@redux-store": ["./src/redux/store"],
       "@redux-reducers/*": ["./src/redux/reducers/*"]
     }

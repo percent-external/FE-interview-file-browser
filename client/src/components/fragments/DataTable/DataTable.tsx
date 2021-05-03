@@ -1,20 +1,27 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, memo } from "react";
+import { useSelector } from "react-redux";
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
-import { makeStyles } from "@material-ui/core/styles";
-import { getFileSize, getFormattedDateTime, getType } from "@helpers/methods";
-import { color, spaceDt } from "@helpers/styles";
-
-import { useListEntriesQuery, Entry } from "../../../generated-api";
-import { classnames } from "@material-ui/data-grid";
-import { Box, Button, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  makeStyles,
+} from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBack";
+
+import { Entry } from "@helpers/types";
+import { color, spaceDt } from "@helpers/styles";
+import { getFileSize, getFormattedDateTime, getType } from "@helpers/methods";
+import { useListEntriesQuery } from "@adapters/generated-api";
+
+import { selectFilterQuery } from "@redux-reducers/filter-query";
 
 const useStyles = makeStyles({
   table: {
@@ -41,6 +48,7 @@ const useStyles = makeStyles({
 
 function DataTable() {
   const classes = useStyles();
+  const filterQuery = useSelector(selectFilterQuery);
   const [page, setPage] = useState(1);
   const [selectedRowID, setSelectedRowID] = useState<string | null>(null);
   const [currentPath, setCurrentPath] = useState("/");
@@ -60,13 +68,13 @@ function DataTable() {
          * @name size_gt a number value that file size should be greater than
          * @name size_lt a number value that file size should be less than
          */
-        // size_gt: sizeGt, // Int
-        // size_lt: Int,
+        size_gt: filterQuery.sizeGt ?? 0, // Int
+        size_lt: filterQuery.sizeLt ?? 0, // Int,
         /**
          * Entry Name Contains
          * @name name_contains an entry "name" text value to search on
          */
-        // name_contains: String,
+        name_contains: filterQuery.nameContains ?? "", // String,
         /**
          * Type Equals
          * @name type_eq Exact match for Entry type
@@ -75,6 +83,8 @@ function DataTable() {
       },
     },
   });
+
+  console.log(filterQuery);
 
   useEffect(() => {
     setSelectedRowID(null);
@@ -99,8 +109,6 @@ function DataTable() {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage + 1);
   };
-
-  console.log(history);
 
   return (
     <>
@@ -154,11 +162,11 @@ function DataTable() {
               return (
                 <TableRow
                   key={id}
-                  className={classnames(
+                  className={
                     selectedRowID === id
                       ? classes.tableRowSelected
                       : classes.tableRow
-                  )}
+                  }
                   onClick={() => {
                     setSelectedRowID(id);
                   }}
@@ -198,4 +206,4 @@ function DataTable() {
   );
 }
 
-export default DataTable;
+export default memo(DataTable);

@@ -4,7 +4,7 @@ generates:
     plugins:
       - typescript
       - typescript-resolvers
-  client/src/generated-api/index.tsx:
+  client/src/adapters/generated-api/index.tsx:
     documents:
       - server/src/schema/queries/**/*.ts
     plugins:
@@ -17,7 +17,7 @@ generates:
       withHooks: true
       withHOC: false
       withComponent: false
-  client/src/generated-api/introspection.ts:
+  client/src/adapters/generated-api/introspection.ts:
     plugins:
       - fragment-matcher
 require:

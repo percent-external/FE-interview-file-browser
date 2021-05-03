@@ -1,27 +1,15 @@
-import React, { useState } from "react";
+import React, { memo } from "react";
 
-import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
+import { Box, Paper } from "@material-ui/core";
 
-import CustomToolbar from "@components/CustomToolbar";
-import DataTable from "@components/DataTable";
+import { CustomToolbar, DataTable } from "@components";
 
 function DataGrid() {
-  const [sizeGt, setSizeGt] = useState(200);
-
-  const handleDelete = () => {
-    setSizeGt(0);
-  };
-
   return (
     <Box display="flex" height="100%">
       <Box flexGrow={1}>
         <Paper>
-          <CustomToolbar
-            handleDelete={handleDelete}
-            sizeGt={sizeGt}
-            setSizeGt={setSizeGt}
-          />
+          <CustomToolbar />
           <DataTable />
         </Paper>
       </Box>
@@ -29,4 +17,4 @@ function DataGrid() {
   );
 }
 
-export default DataGrid;
+export default memo(DataGrid);
