@@ -1,36 +1,130 @@
-import React from "react";
-import PropTypes, { InferProps } from "prop-types";
+import React, { useState, useEffect, useMemo } from "react";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
-import Button from "@material-ui/core/Button";
 import TableRow from "@material-ui/core/TableRow";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
 import TablePagination from "@material-ui/core/TablePagination";
 import { makeStyles } from "@material-ui/core/styles";
-import { getType } from "@helpers/methods";
+import { getFileSize, getFormattedDateTime, getType } from "@helpers/methods";
+import { color, spaceDt } from "@helpers/styles";
+
+import { useListEntriesQuery, Entry } from "../../../generated-api";
+import { classnames } from "@material-ui/data-grid";
+import { Box, Button, Typography } from "@material-ui/core";
+import BackIcon from "@material-ui/icons/ArrowBack";
 
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
+    cursor: "default",
+    "-webkit-touch-callout": "none" /* iOS Safari */,
+    "-webkit-user-select": "none" /* Safari */,
+    "-khtml-user-select": "none" /* Konqueror HTML */,
+    "-moz-user-select": "none" /* Old versions of Firefox */,
+    "-ms-user-select": "none" /* Internet Explorer/Edge */,
+    "user-select":
+      "none" /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */,
+  },
+  tableRow: {
+    "&:hover": {
+      backgroundColor: color.bg.hover,
+    },
+  },
+  tableRowSelected: {
+    backgroundColor: color.bg.selected,
   },
 });
 
-function DataTable({
-  rows,
-  updateHistory,
-  setPage,
-  rowCount,
-  page,
-  handleChangePage,
-}: InferProps<typeof DataTable.propTypes>) {
+function DataTable() {
   const classes = useStyles();
+  const [page, setPage] = useState(1);
+  const [selectedRowID, setSelectedRowID] = useState<string | null>(null);
+  const [currentPath, setCurrentPath] = useState("/");
+  const [history, updateHistory] = useState<{ id: string; path: string }[]>([
+    {
+      id: "/",
+      path: "/",
+    },
+  ]);
+  const { data, loading, error } = useListEntriesQuery({
+    variables: {
+      path: currentPath,
+      page,
+      where: {
+        /**
+         * File Size
+         * @name size_gt a number value that file size should be greater than
+         * @name size_lt a number value that file size should be less than
+         */
+        // size_gt: sizeGt, // Int
+        // size_lt: Int,
+        /**
+         * Entry Name Contains
+         * @name name_contains an entry "name" text value to search on
+         */
+        // name_contains: String,
+        /**
+         * Type Equals
+         * @name type_eq Exact match for Entry type
+         */
+        // type_eq: "Directory" | "File",
+      },
+    },
+  });
+
+  useEffect(() => {
+    setSelectedRowID(null);
+    setCurrentPath(history[history.length - 1].path);
+  }, [history]);
+
+  const rows = useMemo(() => {
+    return data?.listEntries?.entries ?? ([] as any);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.listEntries?.entries]);
+
+  const rowCount = useMemo(() => {
+    return data?.listEntries?.pagination.totalRows ?? 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    data?.listEntries?.pagination.pageCount,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    data?.listEntries?.pagination.totalRows,
+  ]);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage + 1);
+  };
+
+  console.log(history);
+
   return (
     <>
+      <Box
+        display="flex"
+        alignItems="center"
+        width="100%"
+        marginLeft={spaceDt(2)}
+        marginBottom={spaceDt(2)}
+      >
+        <Button
+          color="primary"
+          disabled={history.length <= 1}
+          onClick={() => {
+            updateHistory((h: { id: string; path: string }[]) => {
+              setPage(1);
+              return [...h.splice(0, h.length - 1)];
+            });
+          }}
+        >
+          <BackIcon />
+        </Button>
+        <Typography variant="inherit">{currentPath}</Typography>
+      </Box>
       <TableContainer>
         <Table
           className={classes.table}
@@ -39,47 +133,53 @@ function DataTable({
         >
           <TableHead>
             <TableRow>
-              <TableCell>Path</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Type</TableCell>
+              {/* <TableCell>Path</TableCell> */}
+              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">Last modified</TableCell>
+              <TableCell align="left">Type</TableCell>
               <TableCell align="right">Size</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(({ path, __typename, name, size, id }) => {
-              const isUpDir = __typename === "UP_DIR";
+            {rows.map((entry: Entry) => {
+              const { path, __typename, name, id } = entry;
+              const lastModified =
+                __typename === "File"
+                  ? ((entry as unknown) as File).lastModified
+                  : null;
+              const size =
+                __typename === "File"
+                  ? ((entry as unknown) as File).size
+                  : null;
               return (
-                <TableRow key={id}>
-                  <TableCell component="th" scope="row">
-                    <Button
-                      color="primary"
-                      disabled={__typename === "File"}
-                      startIcon={
-                        isUpDir ? (
-                          <MoreHorizIcon />
-                        ) : __typename === "File" ? null : (
-                          <SubdirectoryArrowRightIcon />
-                        )
-                      }
-                      onClick={() => {
-                        updateHistory((h: { id: string; path: string }[]) => {
-                          if (isUpDir && h.length > 1) {
-                            setPage(1);
-                            return [...h.splice(0, h.length - 1)];
-                          } else {
-                            return [...h, { id: path, path }];
-                          }
-                        });
-                      }}
-                    >
-                      {!isUpDir ? path : ""}
-                    </Button>
+                <TableRow
+                  key={id}
+                  className={classnames(
+                    selectedRowID === id
+                      ? classes.tableRowSelected
+                      : classes.tableRow
+                  )}
+                  onClick={() => {
+                    setSelectedRowID(id);
+                  }}
+                  onDoubleClick={() => {
+                    if (__typename === "Directory") {
+                      updateHistory((h: { id: string; path: string }[]) => {
+                        return [...h, { id: path, path }];
+                      });
+                    }
+                  }}
+                >
+                  <TableCell align="left">{name}</TableCell>
+                  <TableCell align="left">
+                    {!lastModified
+                      ? null
+                      : getFormattedDateTime(new Date(lastModified))}
                   </TableCell>
-                  <TableCell align="right">{isUpDir ? "_" : name}</TableCell>
-                  <TableCell align="right">
-                    {isUpDir ? "_" : getType(__typename, name)}
+                  <TableCell align="left">
+                    {getType(__typename, name)}
                   </TableCell>
-                  <TableCell align="right">{isUpDir ? "_" : size}</TableCell>
+                  <TableCell align="right">{getFileSize(size)}</TableCell>
                 </TableRow>
               );
             })}
@@ -97,22 +197,5 @@ function DataTable({
     </>
   );
 }
-
-DataTable.propTypes = {
-  rows: PropTypes.arrayOf(
-    PropTypes.shape({
-      path: PropTypes.string.isRequired,
-      __typename: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      size: PropTypes.number.isRequired,
-      id: PropTypes.string.isRequired,
-    }).isRequired
-  ).isRequired,
-  updateHistory: PropTypes.func.isRequired,
-  setPage: PropTypes.func.isRequired,
-  rowCount: PropTypes.number.isRequired,
-  page: PropTypes.number.isRequired,
-  handleChangePage: PropTypes.func.isRequired,
-};
 
 export default DataTable;

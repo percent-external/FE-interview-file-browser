@@ -10,11 +10,10 @@ const color = {
     primary: "#1E1E1E",
     secondary: "#467BEC",
     light: "#FFFFFF",
-    light2: "#FFFFFF70",
-    light3: "#FFFFFFC0",
     black: "#000",
     danger: "#FF0000",
-    hover: "#1E3E3E",
+    hover: "rgb(7, 177, 77, 0.42)",
+    selected: "rgb(7, 177, 77, 0.72)",
   },
   accent: {
     1: "#F7F8FA",
