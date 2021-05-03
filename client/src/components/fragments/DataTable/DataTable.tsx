@@ -79,7 +79,7 @@ function DataTable() {
          * Type Equals
          * @name type_eq Exact match for Entry type
          */
-        // type_eq: "Directory" | "File",
+        type_eq: filterQuery.typeEq ?? "",
       },
     },
   });

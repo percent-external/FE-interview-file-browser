@@ -8,6 +8,7 @@ import {
   setNameContains,
   setSizeGt,
   setSizeLt,
+  setTypeEq,
 } from "@redux-reducers/filter-query";
 
 import { CustomFilterInput } from "@components";
@@ -28,19 +29,26 @@ function CustomToolbar() {
             title="Name Contains: "
             initialData={filterQuery.nameContains}
             setReduxData={setNameContains}
-            width={250}
+            width={150}
+          />
+          <CustomFilterInput
+            title="Types: "
+            initialData={filterQuery.typeEq}
+            setReduxData={setTypeEq}
           />
           <CustomFilterInput
             title="Min File Size: "
             type="number"
-            initialData={filterQuery.sizeGt}
-            setReduxData={setSizeGt}
+            initialData={filterQuery.sizeLt}
+            setReduxData={setSizeLt}
+            width={50}
           />
           <CustomFilterInput
             title="Max File Size: "
             type="number"
-            initialData={filterQuery.sizeLt}
-            setReduxData={setSizeLt}
+            initialData={filterQuery.sizeGt}
+            setReduxData={setSizeGt}
+            width={50}
           />
         </Box>
       </Box>
