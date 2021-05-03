@@ -44,24 +44,28 @@ const filterEntries = (entries: any[], where?: Maybe<WhereInput>): any[] => {
 
         // Type
         if (where.type_eq) {
-          if (where.type_eq === "Directory" && tmpEntry?.isFile) tmpEntry = undefined
-          if (where.type_eq === "File" && tmpEntry?.isDirectory) tmpEntry = undefined
+          if (where.type_eq.toLowerCase() === "directory" && tmpEntry?.isFile) tmpEntry = undefined;
+          if (where.type_eq.toLowerCase() === "file" && tmpEntry?.isDirectory) tmpEntry = undefined
+          if (where.type_eq.toLowerCase() !== "directory" && where.type_eq.toLowerCase() !== "file") {
+            const arr = tmpEntry?.name.split(".") ?? [];
+            if (arr.length < 2 || arr[arr.length - 1].toLowerCase() !== where.type_eq.toLocaleLowerCase()) tmpEntry = undefined
+          }
         }
 
         // Size
         if (tmpEntry?.isFile) {
           if (where.size_lt && where.size_gt) {
-            if (tmpEntry.size < gt && tmpEntry.size > lt) tmpEntry = undefined
+            if (tmpEntry.size > gt || tmpEntry.size < lt) tmpEntry = undefined
           } else if (where.size_lt && !where.size_gt) {
-            if (tmpEntry.size > lt) tmpEntry = undefined
+            if (tmpEntry.size < lt) tmpEntry = undefined
           } else if (where.size_gt && !where.size_lt) {
-            if (tmpEntry.size < gt) tmpEntry = undefined
+            if (tmpEntry.size > gt) tmpEntry = undefined
           }
         }
 
         // Name
         if (where.name_contains) {
-          if (!tmpEntry?.name.toLowerCase().includes(where.name_contains)) tmpEntry = undefined
+          if (!tmpEntry?.name.toLowerCase().includes(where.name_contains.toLowerCase())) tmpEntry = undefined
         }
 
         return tmpEntry ? entry : undefined
