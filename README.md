@@ -13,7 +13,7 @@ Your UI should support filtering by:
 
 Also, please clean up the existing demo code where you see fit. Keep in mind that your final result should be a representation of *your* coding style. Everything that already exists in this demo is simply there as a jumping off point. No amount of refactoring is off limits as long as all **existing functionality** is retained and expanded upon.
 
-**Note**: This is a front-end oriented challenge. You you should be able to complete the **required** functionality without having to change the server. Changing the server code is not off-limits, but is not necessary.
+**Note**: This is a front-end oriented challenge. You you should be able to complete the **required** functionality without having to change the server. Changing the server code is not off-limits, though it is **not necessary**.
 
 ## Getting Started
 
