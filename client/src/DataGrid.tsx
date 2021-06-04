@@ -85,7 +85,7 @@ function DataGrid() {
     } else if (!directory && fileBox) {
       setBoxField("File");
     } else {
-      alert("You cannot select both file and directory at the same time");
+      alert("You cannot select both file and directory at the same time!");
     }
   };
   const rows = useMemo(() => {
