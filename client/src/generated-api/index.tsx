@@ -137,8 +137,19 @@ export const ListEntriesDocument = gql`
  * });
  */
 export function useListEntriesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ListEntriesQuery, ListEntriesQueryVariables>) {
-        return ApolloReactHooks.useQuery<ListEntriesQuery, ListEntriesQueryVariables>(ListEntriesDocument, baseOptions);
-      }
+    const searchValue: any = Object.values(baseOptions?.variables?.where || {})[0];
+
+    // Check if the search string has a char or if the entered value is a number
+    // If either case is true, we trigger the filter call
+    if (searchValue?.length > 0 || typeof searchValue === 'number') {
+      return ApolloReactHooks.useQuery<ListEntriesQuery, ListEntriesQueryVariables>(ListEntriesDocument, baseOptions);
+    } else {
+      // If we have a string that has no value, we remove the where property
+      // This prevents bad filtering behavior
+      delete baseOptions?.variables?.where
+      return ApolloReactHooks.useQuery<ListEntriesQuery, ListEntriesQueryVariables>(ListEntriesDocument, baseOptions);
+    }
+  }
 export function useListEntriesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ListEntriesQuery, ListEntriesQueryVariables>) {
           return ApolloReactHooks.useLazyQuery<ListEntriesQuery, ListEntriesQueryVariables>(ListEntriesDocument, baseOptions);
         }

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -18,27 +19,48 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 
 import { useListEntriesQuery } from "./generated-api";
+import {DropdownFilter} from "./DropdownFilter";
 
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
+  input: {
+      color: 'white',
+  }
 });
+
+interface DropDownItems {
+  name: string;
+  property: string;
+}
+
+// Defining the properties to show in the dropdwon
+const dropdownItems: DropDownItems[]  = [
+  { name: 'File size (min)', property: 'size_gt' },
+  { name: 'File size (max)', property: 'size_lt' },
+  { name: 'Entry Name', property: 'name_contains' },
+  { name: 'Entry Type', property: 'type_eq' },
+];
 
 function DataGrid() {
   const classes = useStyles();
-  const [sizeGt, setSizeGt] = React.useState(200);
-  const [page, setPage] = React.useState(1);
-  const [currentPath, setCurrentPath] = React.useState('/')
-  const [history, updateHistory] = React.useState<{ id: string, path: string }[]>(
+  const [page, setPage] = useState(1);
+  const [currentPath, setCurrentPath] = useState('/');
+  const [history, updateHistory] = useState<{ id: string, path: string }[]>(
     [{
       id: '/',
       path: '/',
     }]
-  )
+  );
+  const [selectedFilter, setSelectedFilter] = useState<string>('Entry Name');
+  const [filterProperty, setFilterProperty] = useState<string>('size_gt');
+  const [filterValue, setFilterValue] = useState<number | string>('');
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const { data, loading, error } = useListEntriesQuery({
     variables: { 
-      path: currentPath, 
+      path: currentPath,
       page, 
       where: {
         /**
@@ -59,17 +81,21 @@ function DataGrid() {
          * Type Equals
          * @name type_eq Exact match for Entry type
          */
-        // type_eq: "Directory" | "File",
-      }
+        // Include the filter property and value in the where object
+        [filterProperty]: filterValue,
+      },
     },
   });
 
-  React.useEffect(() => {
-    setCurrentPath(history[history.length - 1].path)
-  }, [history])
+  useEffect(() => {
+    setCurrentPath(history[history.length - 1].path);
+  }, [history]);
 
-  const rows = React.useMemo(() => {
-    const dataRows = data?.listEntries?.entries ?? [] as any
+  // Should the selected filter type generate a number or text type input?
+  const filterType = filterProperty === 'size_gt' || filterProperty === 'size_lt'? "number" : "text";
+
+  const rows = useMemo(() => {
+    const dataRows = data?.listEntries?.entries ?? [] as any;
 
     return [
       ...(history.length > 1 
@@ -83,10 +109,11 @@ function DataGrid() {
           ]
         : []),
       ...dataRows,
-    ]
-  }, [history.length, data?.listEntries?.entries])
+    ];
+  }, [history.length, data?.listEntries?.entries]); 
 
-  const rowCount = React.useMemo(() => {
+  const [anchorEl, setAnchorEl] = useState();
+  const rowCount = useMemo(() => {
     const totalUpDirRows = currentPath === '/' 
       ? 0 
       : (data?.listEntries?.pagination.pageCount ?? 0) * 1
@@ -95,15 +122,43 @@ function DataGrid() {
   }, [
     data?.listEntries?.pagination.pageCount, 
     data?.listEntries?.pagination.totalRows
-  ])
+  ]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage + 1);
   };
 
-  const handleDelete = () => {
-    setSizeGt(0)
-  }
+  const handleClear = () => {
+    setFilterValue('');
+  };  
+
+  const handleClose = (filter?: string) => {
+    if (filter) setSelectedFilter(filter);
+    setFilterValue('');
+    setIsOpen(false);
+    setAnchorEl(undefined);
+  };
+
+  const handleClick = (e: any) => {
+    setAnchorEl(e.currentTarget)
+    setIsOpen(true);
+  };
+
+  // on menu item click, set the filter property and close the menu
+  const handleMenuItemClick = (filter: string, property: string) => {
+    setFilterProperty(property);
+    setFilterValue('');
+    handleClose(filter);
+  };
+
+  const handleChange = (e: any) => {
+    if (filterProperty === 'size_gt' || filterProperty === 'size_lt') {
+      return setFilterValue(parseInt(e.target.value));
+    }
+    return setFilterValue(e.target.value);
+  };
+
+
 
   return (
     <Box display="flex" height="100%">
@@ -115,23 +170,21 @@ function DataGrid() {
               <Box>
                 <Chip 
                   color="primary" 
-                  onDelete={handleDelete} 
+                  onDelete={handleClear} 
                   label={
-                    <Box>
-                      <strong>File Size &gt;</strong>
-                      <input 
-                        onChange={(e) => setSizeGt(Number(e.currentTarget.value))} 
-                        type="number"
-                        value={sizeGt}
-                        style={{
-                          marginLeft: 8,
-                          background: 'transparent',
-                          color: 'white',
-                          border: 'none',
-                          width: 80,
-                        }}
-                      />
-                    </Box>
+                    <DropdownFilter
+                      anchorEl={anchorEl}
+                      classes={classes}
+                      dropdownItems={dropdownItems}
+                      filterValue={filterValue}
+                      onChange={handleChange}
+                      onClick={handleClick}
+                      onClose={handleClose}
+                      handleMenuItemClick={handleMenuItemClick}
+                      isOpen={isOpen}
+                      fieldType={filterType}
+                      selectedFilter={selectedFilter}
+                    />
                   }
                 />
               </Box>
@@ -148,7 +201,7 @@ function DataGrid() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map(({path, __typename, name, size, id }) => {
+                {(!!rowCount && !loading) && rows.map(({path, __typename, name, size, id }) => {
                   const isUpDir = __typename === 'UP_DIR'
                   return (
                     <TableRow key={id}>
