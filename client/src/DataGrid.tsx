@@ -69,6 +69,7 @@ function DataGrid() {
       path: "/",
     },
   ]);
+
   const { data } = useListEntriesQuery({
     variables: {
       path: currentPath,
@@ -120,25 +121,24 @@ function DataGrid() {
     setPage(newPage + 1);
   };
 
-  //clearing the name filter
+  // clearing the name filter
   const handleNameDelete = () => {
     setEntryName("");
   };
 
-  //handling the show/hide of filter-
-  //implemented showing/hiding of the filter options on click since everyone doesn't need the option to filter items
+  // implemented show/hide of the filter options on click since everyone doesn't need the option to filter items
   const handleShowFilter = () => {
     setActive(!isActive);
   };
 
-  //clearing all the entries
+  // clearing all the entries
   const handelRefresh = () => {
     setEntryName("");
     setEntryType("");
     evaluate(minMaxType, "");
   };
 
-  //updating sizeLt/sizeGt based on the option of min/max choosen by the user
+  // updating sizeLt/sizeGt based on the option of min/max chosen by the user and also the size input
   function evaluate(__minMaxType: string, __sizeInput: string) {
     const sizeInputNum: number = Number(__sizeInput);
 
@@ -165,7 +165,9 @@ function DataGrid() {
             <Box className={isActive ? "fileBrowserClass" : "fileBrowser"}>
               File Browser
             </Box>
-            <TuneIcon //added the tune icon to quickly sum up what the text is about
+
+            {/* icon for the filters */}
+            <TuneIcon
               onClick={handleShowFilter}
               style={{
                 fontSize: "16px",
@@ -182,11 +184,13 @@ function DataGrid() {
               }}
               onClick={handleShowFilter}
             >
-              All Filters
+              Filters
             </Box>
+
+            {/* all filters are contained in this to enable show/hide */}
             <Box
               id="allFilters"
-              className={isActive ? "filterClass" : ""} //class name will change on click of show/hide the filter option
+              className={isActive ? "filterClass" : ""}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -211,7 +215,7 @@ function DataGrid() {
                 }}
               />
 
-              {/* choosed dropdown design since there are only 3 options to choose from "All types, File or Directory" */}
+              {/* choosed dropdown design since there are only 3 options to choose from "All, File or Directory" */}
               <FormControl className="filters">
                 <InputLabel id="outlined-label">Type</InputLabel>
                 <Select
@@ -220,7 +224,7 @@ function DataGrid() {
                   onChange={(e) => setEntryType(String(e.target.value))}
                   label="Type"
                 >
-                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="">All</MenuItem>
                   <MenuItem value="File">File</MenuItem>
                   <MenuItem value="Directory">Directory</MenuItem>
                 </Select>
@@ -232,9 +236,7 @@ function DataGrid() {
                 <Select
                   labelId="size-label"
                   value={minMaxType}
-                  onChange={(e) => {
-                    evaluate(String(e.target.value), sizeInput);
-                  }}
+                  onChange={(e) => evaluate(String(e.target.value), sizeInput)}
                 >
                   <MenuItem value={"Min"}>Min</MenuItem>
                   <MenuItem value={"Max"}>Max</MenuItem>
@@ -244,11 +246,10 @@ function DataGrid() {
               <TextField
                 style={{ width: "20%", margin: "46px 0 30px 0" }}
                 value={sizeInput}
-                onChange={(e) => {
-                  evaluate(minMaxType, e.currentTarget.value);
-                }}
+                onChange={(e) => evaluate(minMaxType, e.currentTarget.value)}
               />
-              {/* added clear button so that we don't have to clear every entry individually */}
+
+              {/* added clear button so that we don't have to clear each filter individually */}
               <Button
                 style={{
                   background: "#000",
@@ -264,6 +265,7 @@ function DataGrid() {
               </Button>
             </Box>
           </Toolbar>
+
           <TableContainer>
             <Table
               className={classes.table}
@@ -278,6 +280,7 @@ function DataGrid() {
                   <StyledTableCell align="right">Size</StyledTableCell>
                 </StyledTableRow>
               </TableHead>
+
               <TableBody>
                 {rows.map(({ path, __typename, name, size, id }) => {
                   const isUpDir = __typename === "UP_DIR";
@@ -286,7 +289,6 @@ function DataGrid() {
                       <StyledTableCell component="th" scope="row">
                         <Button
                           color="primary"
-                          // disabled={__typename === 'File'} Removing this beacuse File is also clickable now
                           startIcon={
                             isUpDir ? (
                               <MoreHorizIcon />
@@ -295,7 +297,7 @@ function DataGrid() {
                             )
                           }
                           onClick={() => {
-                            //checking if the type is file then show the message with the clicked file name
+                            // checking if the type is "File" then show the alert message with the clicked file name
                             if (__typename === "File") {
                               alert("You clicked on file " + name);
                             } else {
