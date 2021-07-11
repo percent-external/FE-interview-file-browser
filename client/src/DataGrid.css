@@ -1,0 +1,31 @@
+.filters {
+  margin: 30px 12px !important;
+  width: 30%;
+}
+
+.cross-icon {
+  color: #d3d3d3;
+  cursor: pointer;
+  font-size: 5px;
+}
+
+#allFilters.filterClass {
+  max-width: 50%;
+}
+
+#allFilters {
+  max-width: 0%;
+  transition: 0s;
+  overflow: hidden;
+}
+
+.fileBrowser {
+  width: 20%;
+  margin-right: 69%;
+  font-size: 23px;
+}
+.fileBrowserClass {
+  width: 20%;
+  margin-right: 24%;
+  font-size: 23px;
+}

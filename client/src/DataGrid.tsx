@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import "./DataGrid.css";
 
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import Chip from "@material-ui/core/Chip";
+import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -12,12 +13,37 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from '@material-ui/core/styles';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import { withStyles, makeStyles } from "@material-ui/core/styles";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
+import TuneIcon from "@material-ui/icons/Tune";
+import ClearIcon from "@material-ui/icons/Clear";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import { useListEntriesQuery } from "./generated-api";
+
+// styling the table with alternate grey & white row & with black header to make each row look seprate from each other
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
 
 const useStyles = makeStyles({
   table: {
@@ -27,82 +53,108 @@ const useStyles = makeStyles({
 
 function DataGrid() {
   const classes = useStyles();
-  const [sizeGt, setSizeGt] = React.useState(200);
-  const [page, setPage] = React.useState(1);
-  const [currentPath, setCurrentPath] = React.useState('/')
-  const [history, updateHistory] = React.useState<{ id: string, path: string }[]>(
-    [{
-      id: '/',
-      path: '/',
-    }]
-  )
-  const { data, loading, error } = useListEntriesQuery({
-    variables: { 
-      path: currentPath, 
-      page, 
-      where: {
-        /**
-         * File Size
-         * @name size_gt a number value that file size should be greater than
-         * @name size_lt a number value that file size should be less than
-         */
-        // size_gt: sizeGt, // Int
-        // size_lt: Int,
 
-        /**
-         * Entry Name Contains
-         * @name name_contains an entry "name" text value to search on
-         */
-        // name_contains: String,
-        
-        /**
-         * Type Equals
-         * @name type_eq Exact match for Entry type
-         */
-        // type_eq: "Directory" | "File",
-      }
+  const [isActive, setActive] = useState(false);
+  const [sizeInput, setSizeInput] = useState("");
+  const [minMaxType, setMinMaxType] = useState("Max");
+  const [sizeGt, setSizeGt] = useState(0);
+  const [sizeLt, setSizeLt] = useState(0);
+  const [entryName, setEntryName] = useState("");
+  const [entryType, setEntryType] = useState("");
+  const [page, setPage] = useState(1);
+  const [currentPath, setCurrentPath] = useState("/");
+  const [history, updateHistory] = useState<{ id: string; path: string }[]>([
+    {
+      id: "/",
+      path: "/",
+    },
+  ]);
+  const { data } = useListEntriesQuery({
+    variables: {
+      path: currentPath,
+      page,
+      where: {
+        size_gt: sizeGt,
+        size_lt: sizeLt,
+        name_contains: entryName,
+        type_eq: entryType,
+      },
     },
   });
 
   React.useEffect(() => {
-    setCurrentPath(history[history.length - 1].path)
-  }, [history])
+    setCurrentPath(history[history.length - 1].path);
+  }, [history]);
 
   const rows = React.useMemo(() => {
-    const dataRows = data?.listEntries?.entries ?? [] as any
+    const dataRows = data?.listEntries?.entries ?? ([] as any);
 
     return [
-      ...(history.length > 1 
+      ...(history.length > 1
         ? [
             {
               id: history[history.length - 2].id,
               path: history[history.length - 2].path,
-              name: 'UP_DIR',
-              __typename: 'UP_DIR'
-            }
+              name: "UP_DIR",
+              __typename: "UP_DIR",
+            },
           ]
         : []),
       ...dataRows,
-    ]
-  }, [history.length, data?.listEntries?.entries])
+    ];
+  }, [history.length, data?.listEntries?.entries]);
 
   const rowCount = React.useMemo(() => {
-    const totalUpDirRows = currentPath === '/' 
-      ? 0 
-      : (data?.listEntries?.pagination.pageCount ?? 0) * 1
-    const totalRowsFromServer = data?.listEntries?.pagination.totalRows ?? 0
-    return  totalRowsFromServer + totalUpDirRows
+    const totalUpDirRows =
+      currentPath === "/"
+        ? 0
+        : (data?.listEntries?.pagination.pageCount ?? 0) * 1;
+    const totalRowsFromServer = data?.listEntries?.pagination.totalRows ?? 0;
+    return totalRowsFromServer + totalUpDirRows;
   }, [
-    data?.listEntries?.pagination.pageCount, 
-    data?.listEntries?.pagination.totalRows
-  ])
+    data?.listEntries?.pagination.pageCount,
+    data?.listEntries?.pagination.totalRows,
+  ]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage + 1);
   };
 
-  const handleDelete = () => {
-    setSizeGt(0)
+  //clearing the name filter
+  const handleNameDelete = () => {
+    setEntryName("");
+  };
+
+  //handling the show/hide of filter-
+  //implemented showing/hiding of the filter options on click since everyone doesn't need the option to filter items
+  const handleShowFilter = () => {
+    setActive(!isActive);
+  };
+
+  //clearing all the entries
+  const handelRefresh = () => {
+    setEntryName("");
+    setEntryType("");
+    evaluate(minMaxType, "");
+  };
+
+  //updating sizeLt/sizeGt based on the option of min/max choosen by the user
+  function evaluate(__minMaxType: string, __sizeInput: string) {
+    const sizeInputNum: number = Number(__sizeInput);
+
+    if (__minMaxType === "Max") {
+      setSizeLt(sizeInputNum);
+      setSizeGt(0);
+    } else if (__minMaxType === "Min") {
+      setSizeLt(0);
+      setSizeGt(sizeInputNum);
+    } else {
+      setSizeLt(0);
+      setSizeGt(0);
+    }
+
+    setMinMaxType(__minMaxType);
+    setSizeInput(__sizeInput);
   }
 
   return (
@@ -110,75 +162,169 @@ function DataGrid() {
       <Box flexGrow={1}>
         <Paper>
           <Toolbar>
-            <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-              <Typography variant="h6">File Browser</Typography>
-              <Box>
-                <Chip 
-                  color="primary" 
-                  onDelete={handleDelete} 
-                  label={
-                    <Box>
-                      <strong>File Size &gt;</strong>
-                      <input 
-                        onChange={(e) => setSizeGt(Number(e.currentTarget.value))} 
-                        type="number"
-                        value={sizeGt}
-                        style={{
-                          marginLeft: 8,
-                          background: 'transparent',
-                          color: 'white',
-                          border: 'none',
-                          width: 80,
-                        }}
+            <Box className={isActive ? "fileBrowserClass" : "fileBrowser"}>
+              File Browser
+            </Box>
+            <TuneIcon //added the tune icon to quickly sum up what the text is about
+              onClick={handleShowFilter}
+              style={{
+                fontSize: "16px",
+                cursor: "pointer",
+                margin: "12px 8px 0 26px",
+              }}
+            />
+            <Box
+              style={{
+                width: "8%",
+                fontSize: "16px",
+                marginTop: "11px",
+                cursor: "pointer",
+              }}
+              onClick={handleShowFilter}
+            >
+              All Filters
+            </Box>
+            <Box
+              id="allFilters"
+              className={isActive ? "filterClass" : ""} //class name will change on click of show/hide the filter option
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <TextField
+                className="filters"
+                label="Name"
+                onChange={(e) => setEntryName(String(e.currentTarget.value))}
+                value={entryName}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <ClearIcon
+                        className="cross-icon"
+                        onClick={handleNameDelete}
                       />
-                    </Box>
-                  }
-                />
-              </Box>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              {/* choosed dropdown design since there are only 3 options to choose from "All types, File or Directory" */}
+              <FormControl className="filters">
+                <InputLabel id="outlined-label">Type</InputLabel>
+                <Select
+                  labelId="outlined-label"
+                  value={entryType}
+                  onChange={(e) => setEntryType(String(e.target.value))}
+                  label="Type"
+                >
+                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="File">File</MenuItem>
+                  <MenuItem value="Directory">Directory</MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* choosed dropdown design since there are only 2 options "Max or Min" */}
+              <FormControl style={{ width: "18%", margin: "30px 0 30px 10px" }}>
+                <InputLabel id="size-label">File Size</InputLabel>
+                <Select
+                  labelId="size-label"
+                  value={minMaxType}
+                  onChange={(e) => {
+                    evaluate(String(e.target.value), sizeInput);
+                  }}
+                >
+                  <MenuItem value={"Min"}>Min</MenuItem>
+                  <MenuItem value={"Max"}>Max</MenuItem>
+                </Select>
+              </FormControl>
+
+              <TextField
+                style={{ width: "20%", margin: "46px 0 30px 0" }}
+                value={sizeInput}
+                onChange={(e) => {
+                  evaluate(minMaxType, e.currentTarget.value);
+                }}
+              />
+              {/* added clear button so that we don't have to clear every entry individually */}
+              <Button
+                style={{
+                  background: "#000",
+                  color: "#fff",
+                  margin: "21px",
+                  cursor: "pointer",
+                  fontFamily: "sans-serif",
+                  textTransform: "capitalize",
+                }}
+                onClick={handelRefresh}
+              >
+                Clear
+              </Button>
             </Box>
           </Toolbar>
           <TableContainer>
-            <Table className={classes.table} size="small" aria-label="a dense table">
+            <Table
+              className={classes.table}
+              size="small"
+              aria-label="a dense table"
+            >
               <TableHead>
-                <TableRow>
-                  <TableCell>Path</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Type</TableCell>
-                  <TableCell align="right">Size</TableCell>
-                </TableRow>
+                <StyledTableRow>
+                  <StyledTableCell>Path</StyledTableCell>
+                  <StyledTableCell align="right">Name</StyledTableCell>
+                  <StyledTableCell align="right">Type</StyledTableCell>
+                  <StyledTableCell align="right">Size</StyledTableCell>
+                </StyledTableRow>
               </TableHead>
               <TableBody>
-                {rows.map(({path, __typename, name, size, id }) => {
-                  const isUpDir = __typename === 'UP_DIR'
+                {rows.map(({ path, __typename, name, size, id }) => {
+                  const isUpDir = __typename === "UP_DIR";
                   return (
-                    <TableRow key={id}>
-                      <TableCell component="th" scope="row">
+                    <StyledTableRow key={id}>
+                      <StyledTableCell component="th" scope="row">
                         <Button
                           color="primary"
-                          disabled={__typename === 'File'}
-                          startIcon={isUpDir 
-                            ? (<MoreHorizIcon />)
-                            : (__typename === 'File' ? null : <SubdirectoryArrowRightIcon />)
+                          // disabled={__typename === 'File'} Removing this beacuse File is also clickable now
+                          startIcon={
+                            isUpDir ? (
+                              <MoreHorizIcon />
+                            ) : __typename === "File" ? null : (
+                              <SubdirectoryArrowRightIcon />
+                            )
                           }
                           onClick={() => {
-                            updateHistory((h) => {
-                              if (isUpDir && h.length > 1) {                  
-                                setPage(1)
-                                return [...h.splice(0, h.length - 1)]
-                              } else {
-                                return ([...h, { id: path, path }])
-                              }
-                            })
+                            //checking if the type is file then show the message with the clicked file name
+                            if (__typename === "File") {
+                              alert("You clicked on file " + name);
+                            } else {
+                              updateHistory((h) => {
+                                if (isUpDir && h.length > 1) {
+                                  setPage(1);
+                                  return [...h.splice(0, h.length - 1)];
+                                } else {
+                                  return [...h, { id: path, path }];
+                                }
+                              });
+                            }
                           }}
                         >
-                          {!isUpDir ? path : ''}
+                          {!isUpDir ? path : ""}
                         </Button>
-                      </TableCell>
-                      <TableCell align="right">{isUpDir ? '_' : name}</TableCell>
-                      <TableCell align="right">{isUpDir ? '_' : __typename}</TableCell>
-                      <TableCell align="right">{isUpDir ? '_' : size}</TableCell>
-                    </TableRow>
-                )})}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {isUpDir ? "_" : name}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {isUpDir ? "_" : __typename}
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
+                        {isUpDir ? "_" : size}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
