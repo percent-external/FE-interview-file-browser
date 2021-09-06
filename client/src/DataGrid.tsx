@@ -145,7 +145,6 @@ function DataGrid() {
   };
 
   const renderTable = () => {
-    console.log("history.length === 0 && rows.length === 0", history.length);
     return error !== undefined ? (
       <Box
         display="flex"
