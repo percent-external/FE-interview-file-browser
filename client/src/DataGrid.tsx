@@ -224,7 +224,8 @@ function DataGrid() {
                           setSizeGtFilter(Number(e.currentTarget.value))
                         }
                         type="number"
-                        value={sizeGtFilter}
+                        min="1"
+                        value={sizeGtFilter === 0 ? "" : sizeGtFilter}
                         style={{
                           marginLeft: 8,
                           background: "transparent",
@@ -249,7 +250,8 @@ function DataGrid() {
                           setSizeLtFilter(Number(e.currentTarget.value))
                         }
                         type="number"
-                        value={sizeLtFilter}
+                        min="1"
+                        value={sizeLtFilter === 0 ? "" : sizeLtFilter}
                         style={{
                           marginLeft: 8,
                           background: "transparent",
