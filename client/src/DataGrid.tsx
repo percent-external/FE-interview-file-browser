@@ -124,6 +124,7 @@ function DataGrid() {
   };
 
   const handleDelete = (filterToDelete: FILTER) => {
+    setPage(1);
     switch (filterToDelete) {
       case FILTER.NAME:
         setNameFilter("");
@@ -162,9 +163,10 @@ function DataGrid() {
                     <Box>
                       <strong>File/Dir Name</strong>
                       <input
-                        onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                          setNameFilter(e.currentTarget.value)
-                        }
+                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                          setPage(1);
+                          setNameFilter(e.currentTarget.value);
+                        }}
                         type="text"
                         value={nameFilter}
                         style={{
@@ -193,6 +195,7 @@ function DataGrid() {
                         onChange={(
                           e: React.ChangeEvent<{ value: unknown }>
                         ) => {
+                          setPage(1);
                           setTypeFilter(e.target.value as TYPE);
                         }}
                         style={{
@@ -220,9 +223,10 @@ function DataGrid() {
                     <Box>
                       <strong>Min File Size</strong>
                       <input
-                        onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                          setSizeGtFilter(Number(e.currentTarget.value))
-                        }
+                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                          setPage(1);
+                          setSizeGtFilter(Number(e.currentTarget.value));
+                        }}
                         type="number"
                         min="1"
                         value={sizeGtFilter === 0 ? "" : sizeGtFilter}
@@ -246,9 +250,10 @@ function DataGrid() {
                     <Box>
                       <strong>Max File Size</strong>
                       <input
-                        onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                          setSizeLtFilter(Number(e.currentTarget.value))
-                        }
+                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                          setPage(1);
+                          setSizeLtFilter(Number(e.currentTarget.value));
+                        }}
                         type="number"
                         min="1"
                         value={sizeLtFilter === 0 ? "" : sizeLtFilter}
