@@ -18,6 +18,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import SubdirectoryArrowRightIcon from "@material-ui/icons/SubdirectoryArrowRight";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import { useListEntriesQuery } from "./generated-api";
 
@@ -271,73 +272,88 @@ function DataGrid() {
               </Box>
             </Box>
           </Toolbar>
-          <TableContainer>
-            <Table
-              className={classes.table}
-              size="small"
-              aria-label="a dense table"
+
+          {loading ? (
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              width="100%"
+              paddingY={10}
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell>Path</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Type</TableCell>
-                  <TableCell align="right">Size</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map(({ path, __typename, name, size, id }) => {
-                  const isUpDir = __typename === "UP_DIR";
-                  return (
-                    <TableRow key={id}>
-                      <TableCell component="th" scope="row">
-                        <Button
-                          color="primary"
-                          disabled={__typename === "File"}
-                          startIcon={
-                            isUpDir ? (
-                              <MoreHorizIcon />
-                            ) : __typename === "File" ? null : (
-                              <SubdirectoryArrowRightIcon />
-                            )
-                          }
-                          onClick={() => {
-                            updateHistory((h) => {
-                              if (isUpDir && h.length > 1) {
-                                setPage(1);
-                                return [...h.splice(0, h.length - 1)];
-                              } else {
-                                return [...h, { id: path, path }];
-                              }
-                            });
-                          }}
-                        >
-                          {!isUpDir ? path : ""}
-                        </Button>
-                      </TableCell>
-                      <TableCell align="right">
-                        {isUpDir ? "_" : name}
-                      </TableCell>
-                      <TableCell align="right">
-                        {isUpDir ? "_" : __typename}
-                      </TableCell>
-                      <TableCell align="right">
-                        {isUpDir ? "_" : size}
-                      </TableCell>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Box>
+              <TableContainer>
+                <Table
+                  className={classes.table}
+                  size="small"
+                  aria-label="a dense table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Path</TableCell>
+                      <TableCell align="right">Name</TableCell>
+                      <TableCell align="right">Type</TableCell>
+                      <TableCell align="right">Size</TableCell>
                     </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[]}
-            component="div"
-            count={rowCount}
-            rowsPerPage={25}
-            page={page - 1}
-            onChangePage={handleChangePage}
-          />
+                  </TableHead>
+                  <TableBody>
+                    {rows.map(({ path, __typename, name, size, id }) => {
+                      const isUpDir = __typename === "UP_DIR";
+                      return (
+                        <TableRow key={id}>
+                          <TableCell component="th" scope="row">
+                            <Button
+                              color="primary"
+                              disabled={__typename === "File"}
+                              startIcon={
+                                isUpDir ? (
+                                  <MoreHorizIcon />
+                                ) : __typename === "File" ? null : (
+                                  <SubdirectoryArrowRightIcon />
+                                )
+                              }
+                              onClick={() => {
+                                updateHistory((h) => {
+                                  if (isUpDir && h.length > 1) {
+                                    setPage(1);
+                                    return [...h.splice(0, h.length - 1)];
+                                  } else {
+                                    return [...h, { id: path, path }];
+                                  }
+                                });
+                              }}
+                            >
+                              {!isUpDir ? path : ""}
+                            </Button>
+                          </TableCell>
+                          <TableCell align="right">
+                            {isUpDir ? "_" : name}
+                          </TableCell>
+                          <TableCell align="right">
+                            {isUpDir ? "_" : __typename}
+                          </TableCell>
+                          <TableCell align="right">
+                            {isUpDir ? "_" : size}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[]}
+                component="div"
+                count={rowCount}
+                rowsPerPage={25}
+                page={page - 1}
+                onChangePage={handleChangePage}
+              />{" "}
+            </Box>
+          )}
         </Paper>
       </Box>
     </Box>
