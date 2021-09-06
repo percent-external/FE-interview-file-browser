@@ -3,6 +3,8 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Chip from "@material-ui/core/Chip";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -30,6 +32,11 @@ enum FILTER {
   TYPE,
   MIN_FILE_SIZE,
   MAX_FILE_SIZE,
+}
+
+enum TYPE {
+  DIRECTORY = "Directory",
+  FILE = "File",
 }
 
 function DataGrid() {
@@ -155,7 +162,9 @@ function DataGrid() {
                     <Box>
                       <strong>File/Dir Name</strong>
                       <input
-                        onChange={(e) => setNameFilter(e.currentTarget.value)}
+                        onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                          setNameFilter(e.currentTarget.value)
+                        }
                         type="text"
                         value={nameFilter}
                         style={{
@@ -177,18 +186,28 @@ function DataGrid() {
                   label={
                     <Box>
                       <strong>Type</strong>
-                      <input
-                        onChange={(e) => setTypeFilter(e.currentTarget.value)}
-                        type="text"
+                      <Select
+                        labelId="demo-simple-select-helper-label"
+                        id="demo-simple-select-helper"
                         value={typeFilter}
+                        onChange={(
+                          e: React.ChangeEvent<{ value: unknown }>
+                        ) => {
+                          setTypeFilter(e.target.value as TYPE);
+                        }}
                         style={{
                           marginLeft: 8,
                           background: "transparent",
                           color: "white",
                           border: "none",
-                          width: 80,
+                          width: 120,
                         }}
-                      />
+                      >
+                        <MenuItem value={TYPE.DIRECTORY}>
+                          {TYPE.DIRECTORY}
+                        </MenuItem>
+                        <MenuItem value={TYPE.FILE}>{TYPE.FILE}</MenuItem>
+                      </Select>
                     </Box>
                   }
                 />
@@ -201,7 +220,7 @@ function DataGrid() {
                     <Box>
                       <strong>Min File Size</strong>
                       <input
-                        onChange={(e) =>
+                        onChange={(e: React.FormEvent<HTMLInputElement>) =>
                           setSizeGtFilter(Number(e.currentTarget.value))
                         }
                         type="number"
@@ -226,7 +245,7 @@ function DataGrid() {
                     <Box>
                       <strong>Max File Size</strong>
                       <input
-                        onChange={(e) =>
+                        onChange={(e: React.FormEvent<HTMLInputElement>) =>
                           setSizeLtFilter(Number(e.currentTarget.value))
                         }
                         type="number"
