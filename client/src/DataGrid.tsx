@@ -54,15 +54,16 @@ function DataGrid() {
       path: currentPath,
       page,
       where: {
-        // name_contains: "md",
-        // type_eq: "Directory",
+        name_contains: nameFilter.toLowerCase(),
+        type_eq: typeFilter,
+        size_gt: sizeGtFilter, // Int
+        size_lt: sizeLtFilter,
         /**
          * File Size
          * @name size_gt a number value that file size should be greater than
          * @name size_lt a number value that file size should be less than
          */
-        size_gt: sizeGtFilter, // Int
-        size_lt: sizeLtFilter,
+
         /**
          * Entry Name Contains
          * @name name_contains an entry "name" text value to search on
@@ -152,7 +153,7 @@ function DataGrid() {
                   onDelete={() => handleDelete(FILTER.NAME)}
                   label={
                     <Box>
-                      <strong>File Name</strong>
+                      <strong>File/Dir Name</strong>
                       <input
                         onChange={(e) => setNameFilter(e.currentTarget.value)}
                         type="text"
@@ -175,7 +176,7 @@ function DataGrid() {
                   onDelete={() => handleDelete(FILTER.TYPE)}
                   label={
                     <Box>
-                      <strong>File Type</strong>
+                      <strong>Type</strong>
                       <input
                         onChange={(e) => setTypeFilter(e.currentTarget.value)}
                         type="text"
