@@ -145,6 +145,7 @@ function DataGrid() {
   };
 
   const renderTable = () => {
+    console.log("history.length === 0 && rows.length === 0", history.length);
     return error !== undefined ? (
       <Box
         display="flex"
@@ -209,6 +210,21 @@ function DataGrid() {
                   </TableRow>
                 );
               })}
+              {
+                // empty state condition
+                ((history.length === 1 && rows.length === 0) ||
+                  (history.length > 1 && rows.length === 1)) && (
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      {" "}
+                      No results
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                )
+              }
             </TableBody>
           </Table>
         </TableContainer>
